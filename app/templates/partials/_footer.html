@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    footer {
+      background: var(--card);
+      padding: 48px 0 24px;
+      border-top: 1px solid var(--border);
+    }
+    
+    .footer-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 32px;
+      margin-bottom: 32px;
+    }
+    
+    .footer-col h4 {
+      margin-bottom: 16px;
+      color: var(--primary);
+    }
+    
+    .footer-links {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    
+    .footer-links a {
+      color: var(--text-secondary);
+      text-decoration: none;
+      transition: color 0.3s ease;
+      font-size: 13px;
+    }
+    
+    .footer-links a:hover {
+      color: var(--primary);
+    }
+    
+    .copyright {
+      text-align: center;
+      margin-top: 24px;
+      color: var(--text-secondary);
+      font-size: 13px;
+      padding-top: 24px;
+      border-top: 1px solid var(--border);
+    }
+    </style>
+</head>
+<body>
+    
+ <footer id="about">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-col">
+          <h4>MULTITOOL</h4>
+          <p>All your digital tools in one powerful platform. Simplify your workflow and boost productivity.</p>
+        </div>
+        <div class="footer-col">
+          <h4>Tools</h4>
+          <div class="footer-links">
+            <a href="/downloader?platform=youtube">YouTube Downloader</a>
+            <a href="/downloader?platform=instagram">Instagram Downloader</a>
+            <a href="/downloader?platform=tiktok">TikTok Downloader</a>
+            <a href="/pdfconvertertypes">PDF Converter</a>
+            <a href="/imageconvertertypes">Image Converter</a>
+            <a href="/voicetotext">Voice-to-Text</a>
+            <a href="/imagecompressor">Image Compressor</a>
+            <a href="/videocompressor">Video Compressor</a>
+          </div>
+        </div>
+        <div class="footer-col">
+          <h4>Company</h4>
+          <div class="footer-links">
+            <a href="https://gcraft.tech/about">About Us</a>
+            <a href="https://gcraft.tech/discuss-project">Contact</a>
+          </div>
+        </div>
+        <div class="footer-col">
+          <h4>Legal</h4>
+          <div class="footer-links">
+            <a href="#">Terms of Service</a>
+            <a href="#">Privacy Policy</a>
+            <a href="#">Cookie Policy</a>
+            <a href="#">GDPR Compliance</a>
+          </div>
+        </div>
+      </div>
+      <div class="copyright">
+        © 2025 GCraft. All rights reserved.
+      </div>
+    </div>
+  </footer>
+  </body>
+</html>

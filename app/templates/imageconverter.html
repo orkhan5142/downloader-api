@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SimpleImage - Convert Image</title>
+    <link rel="stylesheet" href="/static/css/common.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        input:checked + .slider {
+            background-color: var(--card);
+        }
+        
+        input:checked + .slider:before {
+            transform: translateX(20px);
+        }
+        
+        .toggle-icon {
+            font-size: 16px;
+            color: var(--text);
+        }
+        
+        .page-title {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .page-title h1 {
+            font-size: 36px;
+            margin-bottom: 15px;
+            color: var(--primary);
+        }
+        
+        .page-title p {
+            font-size: 18px;
+            color: var(--text-secondary);
+        }
+        
+        .converter-section {
+            background: var(--card);
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: var(--shadow);
+            margin-bottom: 40px;
+        }
+        
+        .drop-area {
+            width: 100%;
+            height: 180px;
+            border: 2px dashed var(--border);
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            padding: 2rem;
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+        
+        .drop-area:hover {
+            border-color: var(--primary);
+            background-color: var(--hover);
+        }
+        
+        .drop-area.active {
+            border-color: var(--primary);
+            background-color: var(--hover);
+        }
+        
+        .drop-area i {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--text-secondary);
+        }
+        
+        .file-info {
+            background: var(--hover);
+            border-radius: 8px;
+            padding: 1rem;
+            width: 100%;
+            margin-bottom: 1rem;
+            display: none;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+        
+        .file-info ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .file-info li {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+        
+        .file-info i {
+            margin-right: 1rem;
+            color: var(--primary);
+            font-size: 1.2rem;
+        }
+        
+        .file-info .file-details {
+            flex: 1;
+        }
+        
+        .file-info .file-size {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+        
+        .clear-files-btn {
+            background: var(--danger);
+            color: var(--card);
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+        }
+        
+        .clear-files-btn:hover {
+            background: var(--danger-dark);
+        }
+        
+        .convert-btn {
+            width: 100%;
+            padding: 1rem;
+            font-weight: 600;
+            font-size: 1.1rem;
+            background-color: var(--primary);
+            color: var(--card);
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            letter-spacing: 0.02em;
+        }
+        
+        .convert-btn:hover {
+            background-color: var(--primary-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 0 15px rgba(74, 110, 224, 0.5);
+        }
+        
+        .convert-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .result-section {
+            width: 100%;
+            margin-top: 2rem;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.5s ease;
+            display: none;
+        }
+        
+        .result-section.visible {
+            opacity: 1;
+            transform: translateY(0);
+            display: block;
+        }
+        
+        .result-container {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            width: 100%;
+        }
+        
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .result-title {
+            font-weight: 600;
+            font-size: 1.2rem;
+        }
+        
+        .result-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .action-btn {
+            background: var(--hover);
+            border: none;
+            color: var(--text);
+            padding: 0.5rem;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+        
+        .action-btn:hover {
+            background: var(--primary);
+            color: var(--card);
+        }
+        
+        .result-text {
+            min-height: 100px;
+            line-height: 1.7;
+            white-space: pre-wrap;
+            padding-right: 0.5rem;
+            color: var(--text-secondary);
+        }
+        
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        
+        .loading-overlay.visible {
+            opacity: 1;
+            pointer-events: all;
+        }
+        
+        .loader {
+            width: 50px;
+            height: 50px;
+            border: 3px solid var(--border);
+            border-top: 3px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 2rem auto;
+        }
+        
+        .loading-text {
+            margin-top: 1rem;
+            font-size: 1.1rem;
+            color: var(--primary);
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        footer {
+            text-align: center;
+            padding: 20px 0;
+            color: var(--text-secondary);
+            border-top: 1px solid var(--border);
+            margin-top: 40px;
+        }
+        
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .footer-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        
+        .footer-links a:hover {
+            color: var(--primary);
+        }
+        
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+                flex-direction: column;
+                position: absolute;
+                top: 60px;
+                left: 0;
+                right: 0;
+                background: var(--nav-bg);
+                padding: 20px;
+                text-align: center;
+            }
+            .nav-links.active {
+                display: flex;
+            }
+            .mobile-toggle {
+                display: block;
+            }
+            .theme-toggle {
+                margin-left: 10px;
+            }
+            .page-title h1 {
+                font-size: 28px;
+            }
+            .page-title p {
+                font-size: 16px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .drop-area {
+                height: 150px;
+            }
+            .logo {
+                font-size: 20px;
+            }
+            .file-info {
+                max-height: 100px;
+            }
+        }
+    </style>
+</head>
+<body class="light-mode">
+    {% include 'partials/_header.html' %}
+    
+    <div class="container">
+        <div class="page-title">
+            <h1 id="converter-title">Convert Image</h1>
+            <p id="converter-subtitle">Upload your image to start the conversion</p>
+        </div>
+        
+        <div class="converter-section">
+            <div class="drop-area" id="drop-area">
+                <i class="fas fa-cloud-upload-alt"></i>
+                <p id="drop-area-text">Drag and drop your image here</p>
+                <p class="record-status">Or click to browse</p>
+                <input type="file" id="file-input" style="display: none;" accept="image/*">
+            </div>
+            
+            <div class="file-info" id="file-info">
+                <ul id="file-list"></ul>
+                <button class="clear-files-btn" id="clear-files-btn">Clear File</button>
+            </div>
+            
+            <button class="convert-btn" id="convert-btn" disabled>Convert Now</button>
+        </div>
+        
+        <div class="result-section" id="result-section">
+            <div class="result-container">
+                <div class="result-header">
+                    <div class="result-title">Conversion Result</div>
+                    <div class="result-actions">
+                        <button class="action-btn" id="download-btn" title="Download converted file" disabled>
+                            <i class="fas fa-download"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="result-text" id="result-text"></div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="loading-overlay" id="loading-overlay">
+        <div class="loader"></div>
+        <p class="loading-text">Converting your image...</p>
+    </div>
+    
+    {% include 'partials/_footer.html' %}
+    
+    <script src="/static/js/common.js"></script>
+    <script>
+        // DOM Elements
+        const dropArea = document.getElementById('drop-area');
+        const dropAreaText = document.getElementById('drop-area-text');
+        const fileInput = document.getElementById('file-input');
+        const fileInfo = document.getElementById('file-info');
+        const fileList = document.getElementById('file-list');
+        const clearFilesBtn = document.getElementById('clear-files-btn');
+        const convertBtn = document.getElementById('convert-btn');
+        const resultSection = document.getElementById('result-section');
+        const resultText = document.getElementById('result-text');
+        const downloadBtn = document.getElementById('download-btn');
+        const loadingOverlay = document.getElementById('loading-overlay');
+        const converterTitle = document.getElementById('converter-title');
+        const converterSubtitle = document.getElementById('converter-subtitle');
+
+        // State variables
+        let selectedFile = null;
+        let toolType = null;
+        let convertedBlobUrl = null;
+
+        // Tool configuration
+        const toolConfig = {
+            'jpeg-to-png': {
+                title: 'Convert JPEG to PNG',
+                subtitle: 'Upload your JPEG image to convert to PNG',
+                inputTypes: ['image/jpeg', 'image/jpg'],
+                outputExt: 'png',
+                outputMime: 'image/png',
+                multipleFiles: false,
+                apiEndpoint: '/api/image-converter/jpeg-to-png',
+                responseType: 'blob'
+            },
+            'png-to-jpeg': {
+                title: 'Convert PNG to JPEG',
+                subtitle: 'Upload your PNG image to convert to JPEG',
+                inputTypes: ['image/png'],
+                outputExt: 'jpg',
+                outputMime: 'image/jpeg',
+                multipleFiles: false,
+                apiEndpoint: '/api/image-converter/png-to-jpeg',
+                responseType: 'blob'
+            },
+            'webp-to-png': {
+                title: 'Convert WebP to PNG',
+                subtitle: 'Upload your WebP image to convert to PNG',
+                inputTypes: ['image/webp'],
+                outputExt: 'png',
+                outputMime: 'image/png',
+                multipleFiles: false,
+                apiEndpoint: '/api/image-converter/webp-to-png',
+                responseType: 'blob'
+            },
+            'png-to-webp': {
+                title: 'Convert PNG to WebP',
+                subtitle: 'Upload your PNG image to convert to WebP',
+                inputTypes: ['image/png'],
+                outputExt: 'webp',
+                outputMime: 'image/webp',
+                multipleFiles: false,
+                apiEndpoint: '/api/image-converter/png-to-webp',
+                responseType: 'blob'
+            },
+            'bmp-to-png': {
+                title: 'Convert BMP to PNG',
+                subtitle: 'Upload your BMP image to convert to PNG',
+                inputTypes: ['image/bmp'],
+                outputExt: 'png',
+                outputMime: 'image/png',
+                multipleFiles: false,
+                apiEndpoint: '/api/image-converter/bmp-to-png',
+                responseType: 'blob'
+            },
+            'tiff-to-jpeg': {
+                title: 'Convert TIFF to JPEG',
+                subtitle: 'Upload your TIFF image to convert to JPEG',
+                inputTypes: ['image/tiff'],
+                outputExt: 'jpg',
+                outputMime: 'image/jpeg',
+                multipleFiles: false,
+                apiEndpoint: '/api/image-converter/tiff-to-jpeg',
+                responseType: 'blob'
+            },
+            'heic-to-jpeg': {
+                title: 'Convert HEIC to JPEG',
+                subtitle: 'Upload your HEIC image to convert to JPEG',
+                inputTypes: ['image/heic', 'image/heif'],
+                outputExt: 'jpg',
+                outputMime: 'image/jpeg',
+                multipleFiles: false,
+                apiEndpoint: '/api/image-converter/heic-to-jpeg',
+                responseType: 'blob'
+            },
+            'svg-to-png': {
+                title: 'Convert SVG to PNG',
+                subtitle: 'Upload your SVG image to convert to PNG',
+                inputTypes: ['image/svg+xml'],
+                outputExt: 'png',
+                outputMime: 'image/png',
+                multipleFiles: false,
+                apiEndpoint: '/api/image-converter/svg-to-png',
+                responseType: 'blob'
+            },
+            'jpeg-to-webp': {
+                title: 'Convert JPEG to WebP',
+                subtitle: 'Upload your JPEG image to convert to WebP',
+                inputTypes: ['image/jpeg', 'image/jpg'],
+                outputExt: 'webp',
+                outputMime: 'image/webp',
+                multipleFiles: false,
+                apiEndpoint: '/api/image-converter/jpeg-to-webp',
+                responseType: 'blob'
+            },
+            'webp-to-jpeg': {
+                title: 'Convert WebP to JPEG',
+                subtitle: 'Upload your WebP image to convert to JPEG',
+                inputTypes: ['image/webp'],
+                outputExt: 'jpg',
+                outputMime: 'image/jpeg',
+                multipleFiles: false,
+                apiEndpoint: '/api/image-converter/webp-to-jpeg',
+                responseType: 'blob'
+            },
+            'png-to-bmp': {
+                title: 'Convert PNG to BMP',
+                subtitle: 'Upload your PNG image to convert to BMP',
+                inputTypes: ['image/png'],
+                outputExt: 'bmp',
+                outputMime: 'image/bmp',
+                multipleFiles: false,
+                apiEndpoint: '/api/image-converter/png-to-bmp',
+                responseType: 'blob'
+            },
+            'jpeg-to-tiff': {
+                title: 'Convert JPEG to TIFF',
+                subtitle: 'Upload your JPEG image to convert to TIFF',
+                inputTypes: ['image/jpeg', 'image/jpg'],
+                outputExt: 'tiff',
+                outputMime: 'image/tiff',
+                multipleFiles: false,
+                apiEndpoint: '/api/image-converter/jpeg-to-tiff',
+                responseType: 'blob'
+            },
+            'jpeg-to-heic': {
+                title: 'Convert JPEG to HEIC',
+                subtitle: 'Upload your JPEG image to convert to HEIC',
+                inputTypes: ['image/jpeg', 'image/jpg'],
+                outputExt: 'heic',
+                outputMime: 'image/heic',
+                multipleFiles: false,
+                apiEndpoint: '/api/image-converter/jpeg-to-heic',
+                responseType: 'blob'
+            },
+            'png-to-svg': {
+                title: 'Convert PNG to SVG',
+                subtitle: 'Upload your PNG image to convert to SVG',
+                inputTypes: ['image/png'],
+                outputExt: 'svg',
+                outputMime: 'image/svg+xml',
+                multipleFiles: false,
+                apiEndpoint: '/api/image-converter/png-to-svg',
+                responseType: 'blob'
+            }
+        };
+
+        // Initialize tool type from URL
+        function initToolType() {
+            const params = new URLSearchParams(window.location.search);
+            toolType = params.get('tool') || 'jpeg-to-png';
+            if (toolConfig[toolType]) {
+                converterTitle.textContent = toolConfig[toolType].title;
+                converterSubtitle.textContent = toolConfig[toolType].subtitle;
+                dropAreaText.textContent = `Drag and drop your ${toolType.split('-')[0].toUpperCase()} image here`;
+                fileInput.multiple = toolConfig[toolType].multipleFiles;
+                fileInput.accept = toolConfig[toolType].inputTypes.join(',');
+            } else {
+                converterTitle.textContent = 'Convert Image';
+                converterSubtitle.textContent = 'Upload your image to start the conversion';
+                dropAreaText.textContent = 'Drag and drop your image here';
+                fileInput.multiple = false;
+                fileInput.accept = 'image/*';
+            }
+            updateConvertButtonState();
+        }
+
+        // File upload functionality
+        dropArea.addEventListener('click', () => {
+            fileInput.click();
+        });
+
+        dropArea.addEventListener('dragover', e => {
+            e.preventDefault();
+            dropArea.classList.add('active');
+        });
+
+        dropArea.addEventListener('dragleave', () => {
+            dropArea.classList.remove('active');
+        });
+
+        dropArea.addEventListener('drop', e => {
+            e.preventDefault();
+            dropArea.classList.remove('active');
+            handleFileSelection(e.dataTransfer.files);
+        });
+
+        fileInput.addEventListener('change', () => {
+            handleFileSelection(fileInput.files);
+        });
+
+        function handleFileSelection(files) {
+            if (files.length === 0) {
+                alert('Please select an image');
+                return;
+            }
+
+            const file = files[0];
+            if (!toolConfig[toolType].inputTypes.includes(file.type)) {
+                alert(`Please select a valid ${toolType.split('-')[0].toUpperCase()} image`);
+                return;
+            }
+
+            selectedFile = file;
+            updateFileInfo();
+            updateConvertButtonState();
+        }
+
+        function updateFileInfo() {
+            fileList.innerHTML = '';
+            if (!selectedFile) {
+                fileInfo.style.display = 'none';
+                return;
+            }
+            
+            fileInfo.style.display = 'block';
+            const li = document.createElement('li');
+            li.innerHTML = `
+                <i class="fas fa-image"></i>
+                <div class="file-details">
+                    <p>${selectedFile.name}</p>
+                    <p class="file-size">${(selectedFile.size / (1024 * 1024)).toFixed(2)} MB</p>
+                </div>
+            `;
+            fileList.appendChild(li);
+        }
+
+        // Clear file
+        clearFilesBtn.addEventListener('click', () => {
+            selectedFile = null;
+            updateFileInfo();
+            updateConvertButtonState();
+        });
+
+        // Convert functionality
+        function updateConvertButtonState() {
+            convertBtn.disabled = !selectedFile;
+        }
+
+        convertBtn.addEventListener('click', async () => {
+            if (!selectedFile) {
+                alert('Please upload an image');
+                return;
+            }
+            
+            loadingOverlay.classList.add('visible');
+            
+            try {
+                await performApiConversion();
+                resultSection.classList.add('visible');
+                downloadBtn.disabled = false;
+            } catch (error) {
+                resultText.innerText = `Error: ${error.message || 'Conversion failed. Please try again.'}`;
+                resultSection.classList.add('visible');
+                downloadBtn.disabled = true;
+            } finally {
+                loadingOverlay.classList.remove('visible');
+            }
+        });
+
+        async function performApiConversion() {
+            const config = toolConfig[toolType];
+            const formData = new FormData();
+            formData.append('file', selectedFile);
+            
+            const response = await fetch(`http://localhost:8000${config.apiEndpoint}`, {
+                method: 'POST',
+                body: formData
+            });
+            
+            if (!response.ok) {
+                throw new Error(`Server error: ${response.statusText}`);
+            }
+            
+            const blob = await response.blob();
+            convertedBlobUrl = URL.createObjectURL(blob);
+            resultText.innerText = `Successfully converted ${selectedFile.name} to ${config.outputExt.toUpperCase()}.\n\nClick the download button to get your converted image.`;
+        }
+
+        // Download functionality
+        downloadBtn.addEventListener('click', () => {
+            if (!convertedBlobUrl) {
+                alert('No converted image available for download.');
+                return;
+            }
+            
+            const config = toolConfig[toolType] || toolConfig['jpeg-to-png'];
+            const a = document.createElement('a');
+            a.href = convertedBlobUrl;
+            a.download = `converted.${config.outputExt}`;
+            document.body.appendChild(a);
+            a.click();
+            
+            setTimeout(() => {
+                document.body.removeChild(a);
+            }, 0);
+        });
+
+        // Cleanup on page unload
+        window.addEventListener('beforeunload', () => {
+            if (convertedBlobUrl) {
+                URL.revokeObjectURL(convertedBlobUrl);
+            }
+        });
+
+        // Initialize
+        initToolType();
+        updateConvertButtonState();
+    </script>
+</body>
+</html>

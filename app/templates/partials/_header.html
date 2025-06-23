@@ -1,0 +1,24 @@
+<nav>
+    <div class="container nav-container">
+        <a href="{{ url_for('home') }}" class="logo">MULTI<span>TOOL</span></a>
+        <button class="mobile-toggle" id="mobile-toggle">
+            <i class="fas fa-bars"></i>
+        </button>
+        <div class="nav-right">
+            <div class="nav-links">
+                <a href="{{ url_for('home') }}#tools">Tools</a>
+                <a href="{{ url_for('home') }}#benefits">Benefits</a>
+                <a href="{{ url_for('home') }}#testimonials">Testimonials</a>
+                <a href="{{ url_for('home') }}#about">About</a>
+            </div>
+            <div class="theme-toggle">
+                <span class="toggle-icon"><i class="fas fa-sun"></i></span>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="theme-toggle">
+                    <span class="slider"></span>
+                </label>
+                <span class="toggle-icon"><i class="fas fa-moon"></i></span>
+            </div>
+        </div>
+    </div>
+</nav>

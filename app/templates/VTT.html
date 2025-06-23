@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EchoScript | Voice-to-Text</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/inter-ui/3.19.3/inter.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/common.css">
+
+  <style>
+    
+    
+    header {
+      width: 100%;
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    
+    h1 {
+      font-size: 2.5rem;
+      font-weight: 800;
+      margin-bottom: 0.5rem;
+      letter-spacing: -0.03em;
+    }
+    
+    .logo-accent {
+      color: var(--accent);
+    }
+    
+    .subtitle {
+      font-size: 1.1rem;
+      color: var(--text-secondary);
+      font-weight: 400;
+    }
+    
+    .input-section {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 2rem;
+    }
+    
+    .tabs {
+      display: flex;
+      margin-bottom: 1.5rem;
+      background: var(--hover);
+      border-radius: 8px;
+      padding: 4px;
+      width: 100%;
+      max-width: 400px;
+    }
+    
+    .tab {
+      flex: 1;
+      padding: 0.75rem;
+      text-align: center;
+      cursor: pointer;
+      border-radius: 6px;
+      transition: all 0.3s ease;
+      font-weight: 500;
+    }
+    
+    .tab.active {
+      background-color: rgba(0, 255, 0, 0.15);
+      color: var(--accent);
+    }
+    
+    .input-container {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    
+    .drop-area {
+      width: 100%;
+      height: 180px;
+      border: 2px dashed var(--border);
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      padding: 2rem;
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+    
+    .drop-area:hover {
+      border-color: var(--accent);
+      background-color: var(--hover);
+    }
+    
+    .drop-area i {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+      color: var(--text-secondary);
+    }
+    
+    .drop-area.active {
+      border-color: var(--accent);
+      background-color: var(--hover);
+    }
+    
+    .record-container {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    
+    .record-button {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background-color: var(--hover);
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-bottom: 1rem;
+    }
+    
+    .record-button:hover {
+      transform: scale(1.05);
+      background-color: rgba(0, 255, 0, 0.2);
+    }
+    
+    .record-button.recording {
+      animation: pulse 1.5s infinite;
+    }
+    
+    .record-button i {
+      font-size: 1.8rem;
+      color: var(--accent);
+    }
+    
+    .record-status {
+      margin-top: 0.5rem;
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+    }
+    
+    .timer {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      font-variant-numeric: tabular-nums;
+    }
+    
+    .file-info {
+      background: var(--hover);
+      border-radius: 8px;
+      padding: 1rem;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+    
+    .file-info i {
+      margin-right: 1rem;
+      color: var(--accent);
+      font-size: 1.2rem;
+    }
+    
+    .convert-btn {
+      width: 100%;
+      padding: 1rem;
+      font-weight: 600;
+      font-size: 1.1rem;
+      background-color: var(--hover);
+      color: var(--accent);
+      border: 1px solid var(--accent);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      letter-spacing: 0.02em;
+    }
+    
+    .convert-btn:hover {
+      background-color: rgba(0, 255, 0, 0.2);
+      box-shadow: 0 0 15px rgba(0, 255, 0, 0.5);
+      transform: translateY(-2px);
+    }
+    
+    .convert-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      box-shadow: none;
+      transform: none;
+    }
+    
+    .result-section {
+      width: 100%;
+      margin-top: 2rem;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 0.5s ease;
+    }
+    
+    .result-section.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    
+    .result-container {
+      background-color: var(--hover);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      width: 100%;
+    }
+    
+    .result-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--border);
+    }
+    
+    .result-title {
+      font-weight: 600;
+      font-size: 1.2rem;
+    }
+    
+    .result-actions {
+      display: flex;
+      gap: 0.5rem;
+    }
+    
+    .action-btn {
+      background-color: var(--hover);
+      border: none;
+      color: var(--text);
+      padding: 0.5rem;
+      border-radius: 6px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+    }
+    
+    .action-btn:hover {
+      background-color: rgba(0, 255, 0, 0.15);
+      color: var(--accent);
+    }
+    
+    .result-text {
+      min-height: 200px;
+      max-height: 400px;
+      overflow-y: auto;
+      line-height: 1.7;
+      white-space: pre-wrap;
+      padding-right: 0.5rem;
+    }
+    
+    .result-text:focus {
+      outline: none;
+    }
+    
+    .features {
+      display: flex;
+      margin-top: 1rem;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    
+    .feature-toggle {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+    }
+    
+    .toggle {
+      position: relative;
+      width: 36px;
+      height: 20px;
+      border-radius: 20px;
+      background-color: var(--border);
+      margin-right: 0.5rem;
+      transition: all 0.3s ease;
+    }
+    
+    .toggle:before {
+      content: "";
+      position: absolute;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background-color: var(--text);
+      top: 2px;
+      left: 2px;
+      transition: all 0.3s ease;
+    }
+    
+    .feature-toggle.active .toggle {
+      background-color: var(--accent);
+    }
+    
+    .feature-toggle.active .toggle:before {
+      transform: translateX(16px);
+    }
+    
+    .feature-label {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+    }
+    
+    .feature-toggle.active .feature-label {
+      color: var(--text);
+    }
+    
+    .loader {
+      width: 50px;
+      height: 50px;
+      border: 3px solid var(--border);
+      border-top: 3px solid var(--accent);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 2rem auto;
+    }
+    
+    .loading-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: var(--dark-overlay);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+    
+    .loading-overlay.visible {
+      opacity: 1;
+      pointer-events: all;
+    }
+    
+    .loading-text {
+      margin-top: 1rem;
+      font-size: 1.1rem;
+      color: var(--accent);
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 rgba(0, 255, 0, 0.4); }
+      70% { box-shadow: 0 0 0 15px rgba(0, 255, 0, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(0, 255, 0, 0); }
+    }
+    
+    @media (max-width: 768px) {
+      h1 {
+        font-size: 2rem;
+      }
+      
+      .drop-area {
+        height: 150px;
+      }
+      
+      .nav-links {
+        display: none;
+        flex-direction: column;
+        position: absolute;
+        top: 60px;
+        left: 0;
+        right: 0;
+        background: var(--nav-bg);
+        padding: 20px;
+        text-align: center;
+      }
+      .nav-links.active {
+        display: flex;
+      }
+      .mobile-toggle {
+        display: block;
+      }
+      .theme-toggle {
+        margin-left: 10px;
+      }
+    }
+  </style>
+</head>
+<body class="dark-mode">
+  <!-- Navigation -->
+  {% include 'partials/_header.html' %}
+  
+  <div class="container">
+    <header>
+      <h1>Echo<span class="logo-accent">Script</span></h1>
+      <p class="subtitle">Convert your voice into text instantly</p>
+    </header>
+    
+    <div class="input-section">
+      <div class="tabs">
+        <div class="tab" id="record-tab">
+          <i class="fas fa-microphone"></i> Record
+        </div>
+        <div class="tab active" id="upload-tab">
+          <i class="fas fa-file-audio"></i> Upload
+        </div>
+      </div>
+      
+      <div class="input-container">
+        <div class="record-container" id="record-area" style="display: none;">
+          <button class="record-button" id="record-btn">
+            <i class="fas fa-microphone"></i>
+          </button>
+          <div class="timer" id="timer">00:00</div>
+          <p class="record-status" id="record-status">Click to start recording</p>
+        </div>
+        
+        <div class="drop-area" id="upload-area">
+          <i class="fas fa-cloud-upload-alt"></i>
+          <p>Drag and drop your audio file here</p>
+          <p class="record-status">Or click to browse</p>
+          <input type="file" id="file-input" accept=".mp3,.wav,.m4a,.ogg" style="display: none;">
+        </div>
+        
+        <div class="file-info" id="file-info" style="display: none;">
+          <i class="fas fa-file-audio"></i>
+          <div>
+            <p id="file-name">No file selected</p>
+            <p id="file-duration" class="record-status"></p>
+          </div>
+        </div>
+        
+        <button class="convert-btn" id="convert-btn" disabled>Convert to Text</button>
+      </div>
+    </div>
+    
+    <div class="result-section" id="result-section">
+      <div class="result-container">
+        <div class="result-header">
+          <div class="result-title">Transcription Result</div>
+          <div class="result-actions">
+            <button class="action-btn" id="copy-btn" title="Copy to clipboard">
+              <i class="fas fa-copy"></i>
+            </button>
+            <button class="action-btn" id="download-btn" title="Download as .txt">
+              <i class="fas fa-download"></i>
+            </button>
+          </div>
+        </div>
+        
+        <div class="result-text" id="result-text" contenteditable="true"></div>
+        
+        <div class="features">
+          <div class="feature-toggle" id="timestamps-toggle">
+            <div class="toggle"></div>
+            <span class="feature-label">Show timestamps</span>
+          </div>
+          
+          <div class="feature-toggle" id="speakers-toggle">
+            <div class="toggle"></div>
+            <span class="feature-label">Identify speakers</span>
+          </div>
+          
+          <div class="feature-toggle" id="highlight-toggle">
+            <div class="toggle"></div>
+            <span class="feature-label">Highlight low confidence words</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="loading-overlay" id="loading-overlay">
+    <div class="loader"></div>
+    <p class="loading-text">Processing audio...</p>
+  </div>
+{% include 'partials/_footer.html' %}
+
+<script>
+  // Theme toggle
+  const themeToggle = document.getElementById('theme-toggle');
+  const body = document.body;
+  const savedTheme = localStorage.getItem('theme');
+  const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+  if (savedTheme) {
+    body.classList.add(savedTheme + '-mode');
+    themeToggle.checked = savedTheme === 'dark';
+  } else if (systemPrefersDark) {
+    body.classList.replace('light-mode', 'dark-mode');
+    themeToggle.checked = true;
+  }
+
+  themeToggle.addEventListener('change', function() {
+    if (this.checked) {
+      body.classList.replace('light-mode', 'dark-mode');
+      localStorage.setItem('theme', 'dark');
+    } else {
+      body.classList.replace('dark-mode', 'light-mode');
+      localStorage.setItem('theme', 'light');
+    }
+  });
+
+  // Mobile toggle
+  document.getElementById('mobile-toggle').addEventListener('click', () => {
+    document.querySelector('.nav-links').classList.toggle('active');
+  });
+
+  // DOM Elements
+  const recordTab = document.getElementById('record-tab');
+  const uploadTab = document.getElementById('upload-tab');
+  const recordArea = document.getElementById('record-area');
+  const uploadArea = document.getElementById('upload-area');
+  const recordBtn = document.getElementById('record-btn');
+  const recordStatus = document.getElementById('record-status');
+  const timer = document.getElementById('timer');
+  const fileInput = document.getElementById('file-input');
+  const fileInfo = document.getElementById('file-info');
+  const fileName = document.getElementById('file-name');
+  const fileDuration = document.getElementById('file-duration');
+  const convertBtn = document.getElementById('convert-btn');
+  const resultSection = document.getElementById('result-section');
+  const resultText = document.getElementById('result-text');
+  const copyBtn = document.getElementById('copy-btn');
+  const downloadBtn = document.getElementById('download-btn');
+  const loadingOverlay = document.getElementById('loading-overlay');
+  const timestampsToggle = document.getElementById('timestamps-toggle');
+  const speakersToggle = document.getElementById('speakers-toggle');
+  const highlightToggle = document.getElementById('highlight-toggle');
+
+  // State variables
+  let isRecording = false;
+  let mediaRecorder = null;
+  let audioChunks = [];
+  let timerInterval = null;
+  let selectedFile = null;
+  let recordingTime = 0;
+
+  // Tab switching
+  recordTab.addEventListener('click', () => {
+    recordTab.classList.add('active');
+    uploadTab.classList.remove('active');
+    recordArea.style.display = 'flex';
+    uploadArea.style.display = 'none';
+    updateConvertButtonState();
+  });
+
+  uploadTab.addEventListener('click', () => {
+    uploadTab.classList.add('active');
+    recordTab.classList.remove('active');
+    recordArea.style.display = 'none';
+    uploadArea.style.display = 'flex';
+    updateConvertButtonState();
+  });
+
+  // Record functionality
+  recordBtn.addEventListener('click', async () => {
+    if (isRecording) {
+      stopRecording();
+    } else {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        startRecording(stream);
+      } catch (err) {
+        recordStatus.textContent = 'Microphone access denied';
+        console.error('Error accessing microphone:', err);
+      }
+    }
+  });
+
+  function startRecording(stream) {
+    audioChunks = [];
+    mediaRecorder = new MediaRecorder(stream);
+    
+    mediaRecorder.addEventListener('dataavailable', event => {
+      audioChunks.push(event.data);
+    });
+    
+    mediaRecorder.addEventListener('stop', () => {
+      const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+      selectedFile = new File([audioBlob], "recording.webm", { type: 'audio/webm' });
+      fileName.textContent = 'Voice recording';
+      fileDuration.textContent = formatTime(recordingTime);
+      fileInfo.style.display = 'flex';
+      updateConvertButtonState();
+    });
+    
+    recordingTime = 0;
+    startTimer();
+    mediaRecorder.start();
+    isRecording = true;
+    recordBtn.classList.add('recording');
+    recordStatus.textContent = 'Recording in progress...';
+    convertBtn.disabled = true;
+  }
+
+  function stopRecording() {
+    if (mediaRecorder) {
+      mediaRecorder.stop();
+      mediaRecorder.stream.getTracks().forEach(track => track.stop());
+      stopTimer();
+      isRecording = false;
+      recordBtn.classList.remove('recording');
+      recordStatus.textContent = 'Recording complete';
+    }
+  }
+
+  function startTimer() {
+    stopTimer();
+    recordingTime = 0;
+    updateTimerDisplay();
+    
+    timerInterval = setInterval(() => {
+      recordingTime++;
+      updateTimerDisplay();
+    }, 1000);
+  }
+
+  function stopTimer() {
+    clearInterval(timerInterval);
+  }
+
+  function updateTimerDisplay() {
+    timer.textContent = formatTime(recordingTime);
+  }
+
+  function formatTime(seconds) {
+    const mins = Math.floor(seconds / 60).toString().padStart(2, '0');
+    const secs = (seconds % 60).toString().padStart(2, '0');
+    return `${mins}:${secs}`;
+  }
+
+  // File upload functionality
+  uploadArea.addEventListener('click', () => {
+    fileInput.click();
+  });
+
+  uploadArea.addEventListener('dragover', e => {
+    e.preventDefault();
+    uploadArea.classList.add('active');
+  });
+
+  uploadArea.addEventListener('dragleave', () => {
+    uploadArea.classList.remove('active');
+  });
+
+  uploadArea.addEventListener('drop', e => {
+    e.preventDefault();
+    uploadArea.classList.remove('active');
+    
+    if (e.dataTransfer.files.length > 0) {
+      handleFileSelection(e.dataTransfer.files[0]);
+    }
+  });
+
+  fileInput.addEventListener('change', () => {
+    if (fileInput.files.length > 0) {
+      handleFileSelection(fileInput.files[0]);
+    }
+  });
+
+  function handleFileSelection(file) {
+    const validTypes = ['audio/mp3', 'audio/wav', 'audio/m4a', 'audio/ogg', 'audio/mpeg', 'audio/x-m4a', 'audio/ogg', 'audio/webm'];
+    const fileType = file.type;
+    
+    if (!validTypes.some(type => fileType.includes(type.split('/')[1]))) {
+      alert('Please select a valid audio file (MP3, WAV, M4A, or OGG)');
+      return;
+    }
+    
+    selectedFile = file;
+    fileName.textContent = file.name;
+    
+    // Get audio duration if possible
+    const audio = new Audio();
+    const objectUrl = URL.createObjectURL(file);
+    
+    audio.addEventListener('loadedmetadata', () => {
+      fileDuration.textContent = formatTime(Math.round(audio.duration));
+      URL.revokeObjectURL(objectUrl);
+    });
+    
+    audio.addEventListener('error', () => {
+      fileDuration.textContent = `${(file.size / (1024 * 1024)).toFixed(2)} MB`;
+      URL.revokeObjectURL(objectUrl);
+    });
+    
+    audio.src = objectUrl;
+    fileInfo.style.display = 'flex';
+    updateConvertButtonState();
+  }
+
+  // Convert functionality
+  function updateConvertButtonState() {
+    convertBtn.disabled = !(selectedFile || (isRecording && audioChunks.length > 0));
+  }
+
+  convertBtn.addEventListener('click', () => {
+    if (!selectedFile) {
+      alert('Please record or upload an audio file first');
+      return;
+    }
+    
+    // Show loading state
+    loadingOverlay.classList.add('visible');
+    
+    // Simulate transcription process
+    setTimeout(() => {
+      // Add demo transcription text
+      simulateTranscription();
+      
+      // Hide loading and show results
+      loadingOverlay.classList.remove('visible');
+      resultSection.classList.add('visible');
+    }, 2500);
+  });
+
+  // Feature toggles
+  const featureToggles = document.querySelectorAll('.feature-toggle');
+  featureToggles.forEach(toggle => {
+    toggle.addEventListener('click', () => {
+      toggle.classList.toggle('active');
+      updateTranscriptionDisplay();
+    });
+  });
+
+  // Copy and download functionality
+  copyBtn.addEventListener('click', () => {
+    const text = resultText.innerText;
+    navigator.clipboard.writeText(text)
+      .then(() => {
+        copyBtn.innerHTML = '<i class="fas fa-check"></i>';
+        setTimeout(() => {
+          copyBtn.innerHTML = '<i class="fas fa-copy"></i>';
+        }, 1500);
+      })
+      .catch(err => {
+        console.error('Failed to copy text:', err);
+      });
+  });
+
+  downloadBtn.addEventListener('click', () => {
+    const text = resultText.innerText;
+    const blob = new Blob([text], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    
+    a.href = url;
+    a.download = 'transcript.txt';
+    document.body.appendChild(a);
+    a.click();
+    
+    setTimeout(() => {
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }, 0);
+  });
+
+  // Simulated transcription function
+  function simulateTranscription() {
+    const demoText = `Thank you for using EchoScript. This is a demonstration of our voice-to-text conversion tool. The actual implementation would use a real speech recognition API to convert your audio to text with high accuracy.
+
+In a production environment, we would process your audio file through services like Google Cloud Speech-to-Text, Amazon Transcribe, or a similar speech recognition service.
+
+This demo shows how the interface would work. You can edit this text directly, copy it to your clipboard, or download it as a text file.`;
+    
+    resultText.innerText = demoText;
+    updateTranscriptionDisplay();
+  }
+
+  function updateTranscriptionDisplay() {
+    let text = resultText.innerText;
+    
+    // Handle timestamps
+    if (timestampsToggle.classList.contains('active')) {
+      const paragraphs = text.split("\n\n");
+      text = paragraphs.map((paragraph, i) => {
+        const minutes = Math.floor(i * 15 / 60);
+        const seconds = (i * 15) % 60;
+        const timestamp = `[${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}] `;
+        return timestamp + paragraph;
+      }).join("\n\n");
+    }
+    
+    // Handle speaker identification
+    if (speakersToggle.classList.contains('active')) {
+      const paragraphs = text.split("\n\n");
+      text = paragraphs.map((paragraph, i) => {
+        if (!paragraph.startsWith('[') && !paragraph.startsWith('Speaker')) {
+          const speaker = i % 2 === 0 ? "Speaker A: " : "Speaker B: ";
+          return speaker + paragraph;
+        }
+        return paragraph;
+      }).join("\n\n");
+    }
+    
+    // Handle confidence highlighting
+    if (highlightToggle.classList.contains('active')) {
+      const words = text.split(' ');
+      text = words.map((word, i) => {
+        if (i % 9 === 0 && word.length > 3) {
+          return `<span style="background-color: rgba(255, 0, 0, 0.2); padding: 0 2px;">${word}</span>`;
+        }
+        return word;
+      }).join(' ');
+    }
+    
+    resultText.innerHTML = text;
+  }
+
+  // Initialize
+  updateConvertButtonState();
+</script>
+</body>
+</html>
