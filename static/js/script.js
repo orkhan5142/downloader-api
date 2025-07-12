@@ -175,14 +175,22 @@ function displayResults(data) {
     // Clear existing formats
     availableFormats.innerHTML = '';
     
-    // Filter formats
+    // Filter formats based on platform
     const filteredFormats = data.formats.filter(format => {
-        const resolution = format.height || parseInt(format.resolution || format.format_note );
-        return (
-            (format.ext === 'mp4' || format.ext === 'm4a') && 
-            format.filesize && 
-            format.filesize > 100000 
-        );
+        const resolution = format.height || parseInt(format.resolution || format.format_note);
+        // Apply filesize filter only for YouTube
+        if (currentVideoInfo.platform === 'youtube') {
+            return (
+                (format.ext === 'mp4' || format.ext === 'm4a') &&
+                format.filesize && 
+                format.filesize > 100000
+            );
+        } else {
+            // For other platforms, skip filesize filter
+            return (
+                (format.ext === 'mp4' || format.ext === 'm4a')
+            );
+        }
     });
     
     // Group formats (just for sorting, we won't display headers)

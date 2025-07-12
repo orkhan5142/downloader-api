@@ -6,226 +6,20 @@
     <title>Video Downloader | MultiTool</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="/static/css/styles.css">
     <link rel="stylesheet" href="/static/css/common.css">
-    <style>
-        /* Main Content */
-        .main-content {
-            margin-top: 80px;
-            padding: 2rem 1rem;
-        }
-        
-        .title-section {
-            text-align: center;
-            margin-bottom: 2rem;
-        }
-        
-        .title-section h1 {
-            font-size: 2.5rem;
-            font-weight: 700;
-            color: var(--text);
-        }
-        
-        .title-section h1 span {
-            color: var(--primary);
-        }
-        
-        .title-section p {
-            color: var(--text-secondary);
-            font-size: 1.1rem;
-            margin-top: 0.5rem;
-        }
-        
-        .download-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 1rem;
-        }
-        
-        .url-input-container {
-            width: 100%;
-            max-width: 600px;
-        }
-        
-        #url-input {
-            width: 100%;
-            padding: 0.75rem;
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            font-size: 1rem;
-            color: var(--text);
-            background-color: var(--card);
-        }
-        
-        .download-btn {
-            background-color: var(--primary);
-            color: var(--background);
-            border: none;
-            padding: 0.75rem 1.5rem;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-        
-        .download-btn:hover {
-            background-color: var(--primary-hover);
-        }
-        
-        .results-section {
-            margin-top: 2rem;
-            width: 100%;
-            max-width: 600px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-        
-        .processing-indicator {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            color: var(--text);
-            font-weight: 500;
-        }
-        
-        .status-bar {
-            height: 4px;
-            background-color: var(--hover);
-            border-radius: 2px;
-            margin-top: 1rem;
-        }
-        
-        .progress {
-            height: 100%;
-            background-color: var(--primary);
-            border-radius: 2px;
-            width: 0;
-            transition: width 0.3s ease;
-        }
-        
-        .download-result {
-            margin-top: 1rem;
-        }
-        
-        .download-info {
-            display: flex;
-            gap: 1rem;
-            margin-bottom: 1rem;
-        }
-        
-        .media-thumbnail img {
-            width: 120px;
-            height: 80px;
-            object-fit: cover;
-            border-radius: 8px;
-        }
-        
-        .media-details {
-            flex: 1;
-        }
-        
-        .available-formats {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-        }
-        
-        .features-section {
-            margin-top: 3rem;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 2rem;
-        }
-        
-        .feature-card {
-            background-color: var(--card);
-            border-radius: 8px;
-            padding: 1.5rem;
-            text-align: center;
-            box-shadow: var(--shadow);
-            border: 1px solid var(--border);
-        }
-        
-        .feature-icon {
-            font-size: 2rem;
-            color: var(--primary);
-            margin-bottom: 1rem;
-        }
-        
-        .feature-title {
-            font-size: 1.25rem;
-            font-weight: 600;
-            color: var(--text);
-            margin-bottom: 0.5rem;
-        }
-        
-        .feature-desc {
-            color: var(--text-secondary);
-            font-size: 0.9rem;
-        }
-        
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            .nav-links {
-                display: none;
-                flex-direction: column;
-                position: absolute;
-                top: 60px;
-                left: 0;
-                right: 0;
-                background: var(--nav-bg);
-                padding: 20px;
-                text-align: center;
-            }
-            .nav-links.active {
-                display: flex;
-            }
-            .mobile-toggle {
-                display: block;
-            }
-            .theme-toggle {
-                margin-left: 10px;
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="/static/css/downloader.css"> <!-- Link to the new CSS file -->
+    
 </head>
 <body class="light-mode">
+    
     <!-- Navigation -->
-    <nav>
-        <div class="container nav-container">
-            <div class="logo">MULTI<span>TOOL</span></div>
-            <button class="mobile-toggle" id="mobile-toggle">
-                <i class="fas fa-bars"></i>
-            </button>
-            <div class="nav-right">
-                <div class="nav-links">
-                    <a href="/home.html">Home</a>
-                    <a href="/home.html#tools">Tools</a>
-                    <a href="/home.html#benefits">Benefits</a>
-                    <a href="/home.html#testimonials">Testimonials</a>
-                    <a href="/home.html#about">About</a>
-                </div>
-                <div class="theme-toggle">
-                    <span class="toggle-icon">☀️</span>
-                    <label class="toggle-switch">
-                        <input type="checkbox" id="theme-toggle">
-                        <span class="slider"></span>
-                    </label>
-                    <span class="toggle-icon">🌙</span>
-                </div>
-            </div>
-        </div>
-    </nav>
+   {% include 'partials/_header.html' %}
     
     <!-- Main Content -->
     <div class="container main-content">
         <div class="title-section">
             <h1><span id="platform-name">Video</span> Downloader</h1>
-            <p>Download videos from your favorite social platforms in seconds</p>
+            <p id="platform-subtitle">Download videos from your favorite social platforms in seconds</p>
         </div>
         
         <div class="download-container">
@@ -235,7 +29,7 @@
             
             <button class="download-btn" id="download-btn">
                 <i class="fas fa-arrow-down"></i>
-                Download Now
+                <span>Download Now</span>
             </button>
         </div>
         
@@ -246,19 +40,22 @@
             </div>
             
             <div class="status-bar">
-                <div class="progress"></div>
+                <div class="progress" id="progress-bar"></div>
             </div>
             
-            <div class="download-result" style="display: none;">
+            <div class="download-result" id="download-result">
                 <div class="download-info">
                     <div class="media-thumbnail">
-                        <img src="" alt="Video Thumbnail" id="video-thumbnail">
+                        <img src="" alt="Video Thumbnail" id="video-thumbnail" class="thumbnail-img">
+                        <div class="thumbnail-placeholder" id="thumbnail-placeholder">
+                            <i class="fas fa-video"></i>
+                            <span>No Thumbnail</span>
+                        </div>
                     </div>
                     <div class="media-details" id="media-details">
                         <!-- Dynamic content -->
                     </div>
                 </div>
-                
                 <div class="available-formats" id="available-formats">
                     <!-- Dynamic content -->
                 </div>
@@ -286,96 +83,40 @@
                 </div>
                 <h3 class="feature-title">100% Safe</h3>
                 <p class="feature-desc">No registration required. We don't store your videos or personal information.</p>
-            </div>
+            </div>  
         </div>
     </div>
     
+    {% include 'partials/_footer.html' %}
+
+    <script src="/static/js/common.js"></script>
+    <script src="/static/js/script.js"></script>
     <script>
-        // Theme toggle functionality
-        const themeToggle = document.getElementById('theme-toggle');
-        const body = document.body;
-        
-        const savedTheme = localStorage.getItem('theme');
-        const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        
-        if (savedTheme) {
-            body.classList.add(savedTheme + '-mode');
-            themeToggle.checked = savedTheme === 'dark';
-        } else if (systemPrefersDark) {
-            body.classList.replace('light-mode', 'dark-mode');
-            themeToggle.checked = true;
-        }
-        
-        themeToggle.addEventListener('change', function() {
-            if (this.checked) {
-                body.classList.replace('light-mode', 'dark-mode');
-                localStorage.setItem('theme', 'dark');
-            } else {
-                body.classList.replace('dark-mode', 'light-mode');
-                localStorage.setItem('theme', 'light');
-            }
-        });
-
-        // Mobile toggle functionality
-        document.getElementById('mobile-toggle').addEventListener('click', () => {
-            document.querySelector('.nav-links').classList.toggle('active');
-        });
-
-        // Set platform-specific UI elements
+        // Set platform-specific UI elements based on URL parameter
         document.addEventListener('DOMContentLoaded', function() {
             const urlParams = new URLSearchParams(window.location.search);
-            const platform = urlParams.get('platform');
+            const platform = urlParams.get('platform') || 'video'; // Default
             
             const platformData = {
-                'youtube': {
-                    name: 'YouTube',
-                    icon: '<i class="fab fa-youtube"></i>',
-                    color: '#FF0000',
-                    placeholder: 'Paste YouTube video link here...',
-                    subtitle: 'Download videos from YouTube in any format'
-                },
-                'instagram': {
-                    name: 'Instagram',
-                    icon: '<i class="fab fa-instagram"></i>',
-                    color: '#E1306C',
-                    placeholder: 'Paste Instagram video link here...',
-                    subtitle: 'Download Reels, IGTV, and Stories'
-                },
-                'tiktok': {
-                    name: 'TikTok',
-                    icon: '<i class="fab fa-tiktok"></i>',
-                    color: '#000000',
-                    placeholder: 'Paste TikTok video link here...',
-                    subtitle: 'Download without watermark in HD quality'
-                },
-                'facebook': {
-                    name: 'Facebook',
-                    icon: '<i class="fab fa-facebook"></i>',
-                    color: '#1877F2',
-                    placeholder: 'Paste Facebook video link here...',
-                    subtitle: 'Download videos from Facebook'
-                },
-                'twitter': {
-                    name: 'Twitter',
-                    icon: '<i class="fab fa-twitter"></i>',
-                    color: '#1DA1F2',
-                    placeholder: 'Paste Twitter video link here...',
-                    subtitle: 'Download videos from Twitter'
-                }
+                'youtube': { name: 'YouTube', subtitle: 'Download videos from YouTube in any format', color: '#FF0000' },
+                'instagram': { name: 'Instagram', subtitle: 'Download Reels, IGTV, and Stories', color: '#E1306C' },
+                'tiktok': { name: 'TikTok', subtitle: 'Download without watermark in HD quality', color: '#000000' },
+                'facebook': { name: 'Facebook', subtitle: 'Download videos from Facebook', color: '#1877F2' },
+                'twitter': { name: 'Twitter', subtitle: 'Download videos from Twitter', color: '#1DA1F2' },
+                'video': { name: 'Video', subtitle: 'Download videos from your favorite social platforms', color: 'var(--primary-light)' } // Default color from common.css
             };
             
-            if (platform && platformData[platform]) {
-                const data = platformData[platform];
-                document.title = `${data.name} Downloader | MultiTool`;
-                document.getElementById('url-input').placeholder = data.placeholder;
-                document.getElementById('platform-name').textContent = data.name;
-                document.querySelector('.title-section p').textContent = data.subtitle;
+            const data = platformData[platform] || platformData['video'];
+            document.title = `${data.name} Downloader | MultiTool`;
+            document.getElementById('url-input').placeholder = `Paste ${data.name} video link here...`;
+            document.getElementById('platform-name').textContent = data.name;
+            document.getElementById('platform-subtitle').textContent = data.subtitle;
+
+            if (platform !== 'video') {
                 document.documentElement.style.setProperty('--primary', data.color);
                 document.documentElement.style.setProperty('--primary-hover', `${data.color}CC`);
             }
         });
     </script>
-    <script src="/static/js/script.js"></script>
-    <script src="/static/js/common.js"></script>
 </body>
 </html>

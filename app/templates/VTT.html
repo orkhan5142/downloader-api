@@ -9,12 +9,17 @@
   <link rel="stylesheet" href="/static/css/common.css">
 
   <style>
-    
+    /* Specific styles for this page */
+    :root {
+      /* Accent color definition */
+      --accent: #01D26D;
+      --dark-overlay: rgba(0, 0, 0, 0.7);
+    }
     
     header {
       width: 100%;
       text-align: center;
-      margin-bottom: 2rem;
+      padding: 2rem 0;
     }
     
     h1 {
@@ -40,12 +45,16 @@
       flex-direction: column;
       align-items: center;
       margin-bottom: 2rem;
+      max-width: 700px;
+      margin-left: auto;
+      margin-right: auto;
     }
     
     .tabs {
       display: flex;
       margin-bottom: 1.5rem;
-      background: var(--hover);
+      background: var(--card);
+      border: 1px solid var(--border);
       border-radius: 8px;
       padding: 4px;
       width: 100%;
@@ -60,11 +69,12 @@
       border-radius: 6px;
       transition: all 0.3s ease;
       font-weight: 500;
+      color: var(--text-secondary);
     }
     
     .tab.active {
-      background-color: rgba(0, 255, 0, 0.15);
-      color: var(--accent);
+      background-color: var(--accent);
+      color: #fff;
     }
     
     .input-container {
@@ -90,7 +100,7 @@
       margin-bottom: 1rem;
     }
     
-    .drop-area:hover {
+    .drop-area:hover, .drop-area.active {
       border-color: var(--accent);
       background-color: var(--hover);
     }
@@ -99,11 +109,6 @@
       font-size: 2.5rem;
       margin-bottom: 1rem;
       color: var(--text-secondary);
-    }
-    
-    .drop-area.active {
-      border-color: var(--accent);
-      background-color: var(--hover);
     }
     
     .record-container {
@@ -129,11 +134,15 @@
     
     .record-button:hover {
       transform: scale(1.05);
-      background-color: rgba(0, 255, 0, 0.2);
+      background-color: rgba(1, 210, 109, 0.2);
     }
     
     .record-button.recording {
       animation: pulse 1.5s infinite;
+      background-color: #e74c3c;
+    }
+    .record-button.recording i {
+      color: #fff;
     }
     
     .record-button i {
@@ -155,14 +164,22 @@
     }
     
     .file-info {
-      background: var(--hover);
-      border-radius: 8px;
-      padding: 1rem;
-      width: 100%;
-      display: flex;
-      align-items: center;
-      margin-bottom: 1rem;
-    }
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 1rem;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+  overflow: hidden; /* Prevent overflow outside the container */
+}
+
+#file-name {
+  word-break: break-all; /* Break long words to wrap to the next line */
+  overflow: hidden; /* Hide any overflow */
+  max-width: calc(100% - 2.2rem); /* Adjust width to account for icon and padding */
+}
     
     .file-info i {
       margin-right: 1rem;
@@ -175,18 +192,17 @@
       padding: 1rem;
       font-weight: 600;
       font-size: 1.1rem;
-      background-color: var(--hover);
-      color: var(--accent);
-      border: 1px solid var(--accent);
+      background-color: var(--accent);
+      color: #fff;
+      border: none;
       border-radius: 8px;
       cursor: pointer;
       transition: all 0.3s ease;
       letter-spacing: 0.02em;
     }
     
-    .convert-btn:hover {
-      background-color: rgba(0, 255, 0, 0.2);
-      box-shadow: 0 0 15px rgba(0, 255, 0, 0.5);
+    .convert-btn:hover:not(:disabled) {
+      box-shadow: 0 0 15px rgba(1, 210, 109, 0.5);
       transform: translateY(-2px);
     }
     
@@ -198,20 +214,21 @@
     }
     
     .result-section {
-      width: 100%;
-      margin-top: 2rem;
-      opacity: 0;
-      transform: translateY(20px);
-      transition: all 0.5s ease;
-    }
-    
-    .result-section.visible {
-      opacity: 1;
-      transform: translateY(0);
-    }
+  width: 100%;
+  max-width: 700px;
+  margin: 2rem auto 0;
+  display: none; /* Initially hidden */
+  transition: all 0.5s ease;
+}
+
+.result-section.visible {
+  display: block; /* Show when visible class is added */
+  opacity: 1;
+  transform: translateY(0);
+}
     
     .result-container {
-      background-color: var(--hover);
+      background-color: var(--card);
       border: 1px solid var(--border);
       border-radius: 12px;
       padding: 1.5rem;
@@ -239,11 +256,13 @@
     
     .action-btn {
       background-color: var(--hover);
-      border: none;
+      border: 1px solid var(--border);
       color: var(--text);
       padding: 0.5rem;
       border-radius: 6px;
       cursor: pointer;
+      width: 40px;
+      height: 40px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -251,8 +270,9 @@
     }
     
     .action-btn:hover {
-      background-color: rgba(0, 255, 0, 0.15);
-      color: var(--accent);
+      background-color: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
     }
     
     .result-text {
@@ -262,62 +282,16 @@
       line-height: 1.7;
       white-space: pre-wrap;
       padding-right: 0.5rem;
+      border: none;
+      background: transparent;
+      color: var(--text);
+      width: 100%;
+      font-family: inherit;
+      font-size: 1rem;
     }
     
     .result-text:focus {
       outline: none;
-    }
-    
-    .features {
-      display: flex;
-      margin-top: 1rem;
-      gap: 1rem;
-      flex-wrap: wrap;
-    }
-    
-    .feature-toggle {
-      display: flex;
-      align-items: center;
-      cursor: pointer;
-    }
-    
-    .toggle {
-      position: relative;
-      width: 36px;
-      height: 20px;
-      border-radius: 20px;
-      background-color: var(--border);
-      margin-right: 0.5rem;
-      transition: all 0.3s ease;
-    }
-    
-    .toggle:before {
-      content: "";
-      position: absolute;
-      width: 16px;
-      height: 16px;
-      border-radius: 50%;
-      background-color: var(--text);
-      top: 2px;
-      left: 2px;
-      transition: all 0.3s ease;
-    }
-    
-    .feature-toggle.active .toggle {
-      background-color: var(--accent);
-    }
-    
-    .feature-toggle.active .toggle:before {
-      transform: translateX(16px);
-    }
-    
-    .feature-label {
-      font-size: 0.9rem;
-      color: var(--text-secondary);
-    }
-    
-    .feature-toggle.active .feature-label {
-      color: var(--text);
     }
     
     .loader {
@@ -341,7 +315,7 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      z-index: 100;
+      z-index: 1000;
       opacity: 0;
       pointer-events: none;
       transition: opacity 0.3s ease;
@@ -364,54 +338,32 @@
     }
     
     @keyframes pulse {
-      0% { box-shadow: 0 0 0 0 rgba(0, 255, 0, 0.4); }
-      70% { box-shadow: 0 0 0 15px rgba(0, 255, 0, 0); }
-      100% { box-shadow: 0 0 0 0 rgba(0, 255, 0, 0); }
+      0% { box-shadow: 0 0 0 0 rgba(231, 76, 60, 0.7); }
+      70% { box-shadow: 0 0 0 15px rgba(231, 76, 60, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(231, 76, 60, 0); }
     }
     
     @media (max-width: 768px) {
       h1 {
         font-size: 2rem;
       }
-      
       .drop-area {
         height: 150px;
-      }
-      
-      .nav-links {
-        display: none;
-        flex-direction: column;
-        position: absolute;
-        top: 60px;
-        left: 0;
-        right: 0;
-        background: var(--nav-bg);
-        padding: 20px;
-        text-align: center;
-      }
-      .nav-links.active {
-        display: flex;
-      }
-      .mobile-toggle {
-        display: block;
-      }
-      .theme-toggle {
-        margin-left: 10px;
       }
     }
   </style>
 </head>
-<body class="dark-mode">
-  <!-- Navigation -->
+<body class="light-mode">
+  <!-- Placeholder for Navigation (was: {% include 'partials/_header.html' %}) -->
   {% include 'partials/_header.html' %}
   
   <div class="container">
     <header>
       <h1>Echo<span class="logo-accent">Script</span></h1>
-      <p class="subtitle">Convert your voice into text instantly</p>
+      <p class="subtitle">Convert your voice into text instantly and accurately</p>
     </header>
     
-    <div class="input-section">
+    <main class="input-section">
       <div class="tabs">
         <div class="tab" id="record-tab">
           <i class="fas fa-microphone"></i> Record
@@ -434,7 +386,7 @@
           <i class="fas fa-cloud-upload-alt"></i>
           <p>Drag and drop your audio file here</p>
           <p class="record-status">Or click to browse</p>
-          <input type="file" id="file-input" accept=".mp3,.wav,.m4a,.ogg" style="display: none;">
+          <input type="file" id="file-input" accept=".mp3,.wav,.m4a,.ogg,.webm" style="display: none;">
         </div>
         
         <div class="file-info" id="file-info" style="display: none;">
@@ -447,12 +399,12 @@
         
         <button class="convert-btn" id="convert-btn" disabled>Convert to Text</button>
       </div>
-    </div>
+    </main>
     
-    <div class="result-section" id="result-section">
+    <section class="result-section" id="result-section">
       <div class="result-container">
         <div class="result-header">
-          <div class="result-title">Transcription Result</div>
+          <h2 class="result-title">Transcription Result</h2>
           <div class="result-actions">
             <button class="action-btn" id="copy-btn" title="Copy to clipboard">
               <i class="fas fa-copy"></i>
@@ -462,65 +414,20 @@
             </button>
           </div>
         </div>
-        
-        <div class="result-text" id="result-text" contenteditable="true"></div>
-        
-        <div class="features">
-          <div class="feature-toggle" id="timestamps-toggle">
-            <div class="toggle"></div>
-            <span class="feature-label">Show timestamps</span>
-          </div>
-          
-          <div class="feature-toggle" id="speakers-toggle">
-            <div class="toggle"></div>
-            <span class="feature-label">Identify speakers</span>
-          </div>
-          
-          <div class="feature-toggle" id="highlight-toggle">
-            <div class="toggle"></div>
-            <span class="feature-label">Highlight low confidence words</span>
-          </div>
-        </div>
+        <textarea class="result-text" id="result-text"></textarea>
       </div>
-    </div>
+    </section>
   </div>
   
   <div class="loading-overlay" id="loading-overlay">
     <div class="loader"></div>
-    <p class="loading-text">Processing audio...</p>
+    <p class="loading-text">Processing audio... this may take a moment.</p>
   </div>
-{% include 'partials/_footer.html' %}
+  {% include 'partials/_footer.html' %}
+
+<!-- Placeholder for Footer (was: {% include 'partials/_footer.html' %}) -->
 
 <script>
-  // Theme toggle
-  const themeToggle = document.getElementById('theme-toggle');
-  const body = document.body;
-  const savedTheme = localStorage.getItem('theme');
-  const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-
-  if (savedTheme) {
-    body.classList.add(savedTheme + '-mode');
-    themeToggle.checked = savedTheme === 'dark';
-  } else if (systemPrefersDark) {
-    body.classList.replace('light-mode', 'dark-mode');
-    themeToggle.checked = true;
-  }
-
-  themeToggle.addEventListener('change', function() {
-    if (this.checked) {
-      body.classList.replace('light-mode', 'dark-mode');
-      localStorage.setItem('theme', 'dark');
-    } else {
-      body.classList.replace('dark-mode', 'light-mode');
-      localStorage.setItem('theme', 'light');
-    }
-  });
-
-  // Mobile toggle
-  document.getElementById('mobile-toggle').addEventListener('click', () => {
-    document.querySelector('.nav-links').classList.toggle('active');
-  });
-
   // DOM Elements
   const recordTab = document.getElementById('record-tab');
   const uploadTab = document.getElementById('upload-tab');
@@ -528,20 +435,17 @@
   const uploadArea = document.getElementById('upload-area');
   const recordBtn = document.getElementById('record-btn');
   const recordStatus = document.getElementById('record-status');
-  const timer = document.getElementById('timer');
+  const timerEl = document.getElementById('timer');
   const fileInput = document.getElementById('file-input');
   const fileInfo = document.getElementById('file-info');
-  const fileName = document.getElementById('file-name');
-  const fileDuration = document.getElementById('file-duration');
+  const fileNameEl = document.getElementById('file-name');
+  const fileDurationEl = document.getElementById('file-duration');
   const convertBtn = document.getElementById('convert-btn');
   const resultSection = document.getElementById('result-section');
   const resultText = document.getElementById('result-text');
   const copyBtn = document.getElementById('copy-btn');
   const downloadBtn = document.getElementById('download-btn');
   const loadingOverlay = document.getElementById('loading-overlay');
-  const timestampsToggle = document.getElementById('timestamps-toggle');
-  const speakersToggle = document.getElementById('speakers-toggle');
-  const highlightToggle = document.getElementById('highlight-toggle');
 
   // State variables
   let isRecording = false;
@@ -551,24 +455,33 @@
   let selectedFile = null;
   let recordingTime = 0;
 
-  // Tab switching
+  // --- Tab Switching ---
   recordTab.addEventListener('click', () => {
-    recordTab.classList.add('active');
-    uploadTab.classList.remove('active');
-    recordArea.style.display = 'flex';
-    uploadArea.style.display = 'none';
-    updateConvertButtonState();
+    switchTab('record');
   });
 
   uploadTab.addEventListener('click', () => {
-    uploadTab.classList.add('active');
-    recordTab.classList.remove('active');
-    recordArea.style.display = 'none';
-    uploadArea.style.display = 'flex';
-    updateConvertButtonState();
+    switchTab('upload');
   });
 
-  // Record functionality
+  function switchTab(tabName) {
+    if (tabName === 'record') {
+      recordTab.classList.add('active');
+      uploadTab.classList.remove('active');
+      recordArea.style.display = 'flex';
+      uploadArea.style.display = 'none';
+      if (!isRecording) selectedFile = null; // Clear file selection when switching
+    } else {
+      uploadTab.classList.add('active');
+      recordTab.classList.remove('active');
+      recordArea.style.display = 'none';
+      uploadArea.style.display = 'flex';
+      if (isRecording) stopRecording(); // Stop recording if switching away
+    }
+    updateUI();
+  }
+
+  // --- Record Functionality ---
   recordBtn.addEventListener('click', async () => {
     if (isRecording) {
       stopRecording();
@@ -577,7 +490,7 @@
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
         startRecording(stream);
       } catch (err) {
-        recordStatus.textContent = 'Microphone access denied';
+        recordStatus.textContent = 'Microphone access denied. Please allow it in your browser settings.';
         console.error('Error accessing microphone:', err);
       }
     }
@@ -585,7 +498,7 @@
 
   function startRecording(stream) {
     audioChunks = [];
-    mediaRecorder = new MediaRecorder(stream);
+    mediaRecorder = new MediaRecorder(stream, { mimeType: 'audio/webm' });
     
     mediaRecorder.addEventListener('dataavailable', event => {
       audioChunks.push(event.data);
@@ -593,20 +506,17 @@
     
     mediaRecorder.addEventListener('stop', () => {
       const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
-      selectedFile = new File([audioBlob], "recording.webm", { type: 'audio/webm' });
-      fileName.textContent = 'Voice recording';
-      fileDuration.textContent = formatTime(recordingTime);
-      fileInfo.style.display = 'flex';
-      updateConvertButtonState();
+      const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+      selectedFile = new File([audioBlob], `recording-${timestamp}.webm`, { type: 'audio/webm' });
+      updateUI();
     });
     
-    recordingTime = 0;
     startTimer();
     mediaRecorder.start();
     isRecording = true;
-    recordBtn.classList.add('recording');
-    recordStatus.textContent = 'Recording in progress...';
-    convertBtn.disabled = true;
+    recordBtn.innerHTML = '<i class="fas fa-stop"></i>';
+    recordStatus.textContent = 'Recording...';
+    updateUI();
   }
 
   function stopRecording() {
@@ -615,20 +525,19 @@
       mediaRecorder.stream.getTracks().forEach(track => track.stop());
       stopTimer();
       isRecording = false;
-      recordBtn.classList.remove('recording');
-      recordStatus.textContent = 'Recording complete';
+      recordBtn.innerHTML = '<i class="fas fa-microphone"></i>';
+      recordStatus.textContent = 'Click to start recording';
     }
   }
 
   function startTimer() {
     stopTimer();
     recordingTime = 0;
-    updateTimerDisplay();
-    
     timerInterval = setInterval(() => {
       recordingTime++;
       updateTimerDisplay();
     }, 1000);
+    updateTimerDisplay();
   }
 
   function stopTimer() {
@@ -636,7 +545,7 @@
   }
 
   function updateTimerDisplay() {
-    timer.textContent = formatTime(recordingTime);
+    timerEl.textContent = formatTime(recordingTime);
   }
 
   function formatTime(seconds) {
@@ -645,24 +554,13 @@
     return `${mins}:${secs}`;
   }
 
-  // File upload functionality
-  uploadArea.addEventListener('click', () => {
-    fileInput.click();
-  });
-
-  uploadArea.addEventListener('dragover', e => {
-    e.preventDefault();
-    uploadArea.classList.add('active');
-  });
-
-  uploadArea.addEventListener('dragleave', () => {
-    uploadArea.classList.remove('active');
-  });
-
+  // --- File Upload Functionality ---
+  uploadArea.addEventListener('click', () => fileInput.click());
+  uploadArea.addEventListener('dragover', e => { e.preventDefault(); uploadArea.classList.add('active'); });
+  uploadArea.addEventListener('dragleave', () => uploadArea.classList.remove('active'));
   uploadArea.addEventListener('drop', e => {
     e.preventDefault();
     uploadArea.classList.remove('active');
-    
     if (e.dataTransfer.files.length > 0) {
       handleFileSelection(e.dataTransfer.files[0]);
     }
@@ -675,93 +573,104 @@
   });
 
   function handleFileSelection(file) {
-    const validTypes = ['audio/mp3', 'audio/wav', 'audio/m4a', 'audio/ogg', 'audio/mpeg', 'audio/x-m4a', 'audio/ogg', 'audio/webm'];
-    const fileType = file.type;
-    
-    if (!validTypes.some(type => fileType.includes(type.split('/')[1]))) {
-      alert('Please select a valid audio file (MP3, WAV, M4A, or OGG)');
+    const validTypes = ['audio/mp3', 'audio/wav', 'audio/m4a', 'audio/ogg', 'audio/mpeg', 'audio/x-m4a', 'audio/webm'];
+    if (!validTypes.some(type => file.type.startsWith(type.split('/')[0]))) {
+      alert('Please select a valid audio file (MP3, WAV, M4A, OGG, WEBM)');
       return;
     }
-    
     selectedFile = file;
-    fileName.textContent = file.name;
-    
-    // Get audio duration if possible
-    const audio = new Audio();
-    const objectUrl = URL.createObjectURL(file);
-    
-    audio.addEventListener('loadedmetadata', () => {
-      fileDuration.textContent = formatTime(Math.round(audio.duration));
-      URL.revokeObjectURL(objectUrl);
-    });
-    
-    audio.addEventListener('error', () => {
-      fileDuration.textContent = `${(file.size / (1024 * 1024)).toFixed(2)} MB`;
-      URL.revokeObjectURL(objectUrl);
-    });
-    
-    audio.src = objectUrl;
-    fileInfo.style.display = 'flex';
-    updateConvertButtonState();
+    updateUI();
   }
 
-  // Convert functionality
-  function updateConvertButtonState() {
-    convertBtn.disabled = !(selectedFile || (isRecording && audioChunks.length > 0));
+  // --- UI Update Functionality ---
+  function updateUI() {
+    // Record Button State
+    recordBtn.classList.toggle('recording', isRecording);
+    
+    // File Info Display
+    if (selectedFile) {
+      fileNameEl.textContent = selectedFile.name;
+      const audio = new Audio(URL.createObjectURL(selectedFile));
+      audio.onloadedmetadata = () => {
+        fileDurationEl.textContent = formatTime(Math.round(audio.duration));
+        URL.revokeObjectURL(audio.src);
+      };
+      audio.onerror = () => {
+        fileDurationEl.textContent = `${(selectedFile.size / (1024 * 1024)).toFixed(2)} MB`;
+        URL.revokeObjectURL(audio.src);
+      };
+      fileInfo.style.display = 'flex';
+      uploadArea.style.display = 'none';
+    } else {
+      fileInfo.style.display = 'none';
+      if (uploadTab.classList.contains('active')) {
+          uploadArea.style.display = 'flex';
+      }
+    }
+
+    // Convert Button State
+    convertBtn.disabled = !selectedFile || isRecording;
   }
 
-  convertBtn.addEventListener('click', () => {
+  // --- Convert Functionality ---
+  convertBtn.addEventListener('click', async () => {
     if (!selectedFile) {
-      alert('Please record or upload an audio file first');
+      alert('Please record or upload an audio file first.');
       return;
     }
-    
-    // Show loading state
+
     loadingOverlay.classList.add('visible');
-    
-    // Simulate transcription process
-    setTimeout(() => {
-      // Add demo transcription text
-      simulateTranscription();
-      
-      // Hide loading and show results
-      loadingOverlay.classList.remove('visible');
+    resultSection.classList.remove('visible'); // Hide previous results
+
+    const formData = new FormData();
+    formData.append('file', selectedFile);
+
+    try {
+      const response = await fetch('/transcribe', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.detail || `Server error: ${response.status}`);
+      }
+
+      const result = await response.json();
+      resultText.value = result.text;
       resultSection.classList.add('visible');
-    }, 2500);
+
+    } catch (error) {
+      console.error('Transcription failed:', error);
+      alert(`An error occurred during transcription: ${error.message}`);
+    } finally {
+      loadingOverlay.classList.remove('visible');
+    }
   });
 
-  // Feature toggles
-  const featureToggles = document.querySelectorAll('.feature-toggle');
-  featureToggles.forEach(toggle => {
-    toggle.addEventListener('click', () => {
-      toggle.classList.toggle('active');
-      updateTranscriptionDisplay();
-    });
-  });
-
-  // Copy and download functionality
+  // --- Result Actions ---
   copyBtn.addEventListener('click', () => {
-    const text = resultText.innerText;
-    navigator.clipboard.writeText(text)
+    navigator.clipboard.writeText(resultText.value)
       .then(() => {
+        const originalIcon = copyBtn.innerHTML;
         copyBtn.innerHTML = '<i class="fas fa-check"></i>';
-        setTimeout(() => {
-          copyBtn.innerHTML = '<i class="fas fa-copy"></i>';
-        }, 1500);
+        setTimeout(() => { copyBtn.innerHTML = originalIcon; }, 1500);
       })
       .catch(err => {
         console.error('Failed to copy text:', err);
+        alert('Could not copy text to clipboard.');
       });
   });
 
   downloadBtn.addEventListener('click', () => {
-    const text = resultText.innerText;
+    const text = resultText.value;
     const blob = new Blob([text], { type: 'text/plain' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
+    const fileName = (selectedFile.name.split('.')[0] || 'transcript') + '.txt';
     
     a.href = url;
-    a.download = 'transcript.txt';
+    a.download = fileName;
     document.body.appendChild(a);
     a.click();
     
@@ -770,61 +679,10 @@
       URL.revokeObjectURL(url);
     }, 0);
   });
-
-  // Simulated transcription function
-  function simulateTranscription() {
-    const demoText = `Thank you for using EchoScript. This is a demonstration of our voice-to-text conversion tool. The actual implementation would use a real speech recognition API to convert your audio to text with high accuracy.
-
-In a production environment, we would process your audio file through services like Google Cloud Speech-to-Text, Amazon Transcribe, or a similar speech recognition service.
-
-This demo shows how the interface would work. You can edit this text directly, copy it to your clipboard, or download it as a text file.`;
-    
-    resultText.innerText = demoText;
-    updateTranscriptionDisplay();
-  }
-
-  function updateTranscriptionDisplay() {
-    let text = resultText.innerText;
-    
-    // Handle timestamps
-    if (timestampsToggle.classList.contains('active')) {
-      const paragraphs = text.split("\n\n");
-      text = paragraphs.map((paragraph, i) => {
-        const minutes = Math.floor(i * 15 / 60);
-        const seconds = (i * 15) % 60;
-        const timestamp = `[${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}] `;
-        return timestamp + paragraph;
-      }).join("\n\n");
-    }
-    
-    // Handle speaker identification
-    if (speakersToggle.classList.contains('active')) {
-      const paragraphs = text.split("\n\n");
-      text = paragraphs.map((paragraph, i) => {
-        if (!paragraph.startsWith('[') && !paragraph.startsWith('Speaker')) {
-          const speaker = i % 2 === 0 ? "Speaker A: " : "Speaker B: ";
-          return speaker + paragraph;
-        }
-        return paragraph;
-      }).join("\n\n");
-    }
-    
-    // Handle confidence highlighting
-    if (highlightToggle.classList.contains('active')) {
-      const words = text.split(' ');
-      text = words.map((word, i) => {
-        if (i % 9 === 0 && word.length > 3) {
-          return `<span style="background-color: rgba(255, 0, 0, 0.2); padding: 0 2px;">${word}</span>`;
-        }
-        return word;
-      }).join(' ');
-    }
-    
-    resultText.innerHTML = text;
-  }
-
-  // Initialize
-  updateConvertButtonState();
+  
+  // Initial UI state
+  switchTab('upload');
 </script>
+
 </body>
 </html>

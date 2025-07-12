@@ -2,96 +2,136 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <style>
-    footer {
-      background: var(--card);
-      padding: 48px 0 24px;
-      border-top: 1px solid var(--border);
-    }
-    
-    .footer-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 32px;
-      margin-bottom: 32px;
-    }
-    
-    .footer-col h4 {
-      margin-bottom: 16px;
-      color: var(--primary);
-    }
-    
-    .footer-links {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-    
-    .footer-links a {
-      color: var(--text-secondary);
-      text-decoration: none;
-      transition: color 0.3s ease;
-      font-size: 13px;
-    }
-    
-    .footer-links a:hover {
-      color: var(--primary);
-    }
-    
-    .copyright {
-      text-align: center;
-      margin-top: 24px;
-      color: var(--text-secondary);
-      font-size: 13px;
-      padding-top: 24px;
-      border-top: 1px solid var(--border);
-    }
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        /* Footer-specific styles */
+        footer {
+            background: var(--card);
+            padding: 48px 0 24px;
+            border-top: 1px solid var(--border);
+            position: relative; /* Required for pseudo-element positioning */
+        }
+
+        /* Dynamic spacing using ::before */
+        footer::before {
+            content: '';
+            display: block;
+            height: 60px; /* Adjust this value to control the spacing */
+            width: 100%;
+            position: absolute;
+            top: -60px; /* Positions the spacing above the footer */
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 32px;
+            margin-bottom: 32px;
+        }
+
+        .footer-col {
+            padding: 0 15px;
+        }
+
+        .footer-col h4 {
+            margin-bottom: 16px;
+            color: var(--primary);
+        }
+
+        .footer-col p {
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        .footer-links {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .footer-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: color 0.3s ease;
+            font-size: 13px;
+        }
+
+        .footer-links a:hover {
+            color: var(--primary);
+        }
+
+        .copyright {
+            text-align: center;
+            margin-top: 24px;
+            color: var(--text-secondary);
+            font-size: 13px;
+            padding-top: 24px;
+            border-top: 1px solid var(--border);
+        }
+
+        /* Responsive styles for mobile */
+        @media (max-width: 768px) {
+            .footer-col {
+                text-align: center;
+                margin-bottom: 24px;
+            }
+            .footer-links {
+                align-items: center;
+            }
+            .footer-grid {
+                margin-bottom: 0;
+            }
+            /* Adjust dynamic spacing for mobile */
+            footer::before {
+                height: 40px; /* Smaller spacing for mobile */
+                top: -40px;
+            }
+        }
     </style>
 </head>
 <body>
-    
- <footer id="about">
-    <div class="container">
-      <div class="footer-grid">
-        <div class="footer-col">
-          <h4>MULTITOOL</h4>
-          <p>All your digital tools in one powerful platform. Simplify your workflow and boost productivity.</p>
+    <footer id="about">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <h4>MULTITOOL</h4>
+                    <p>All your digital tools in one powerful platform. Simplify your workflow and boost productivity.</p>
+                </div>
+                <div class="footer-col">
+                    <h4>Tools</h4>
+                    <div class="footer-links">
+                        <a href="/downloader?platform=youtube">YouTube Downloader</a>
+                        <a href="/downloader?platform=instagram">Instagram Downloader</a>
+                        <a href="/downloader?platform=tiktok">TikTok Downloader</a>
+                        <a href="/pdfconvertertypes">PDF Converter</a>
+                        <a href="/imageconvertertypes">Image Converter</a>
+                        <a href="/voicetotext">Voice-to-Text</a>
+                        <a href="/imagecompressor">Image Compressor</a>
+                        <a href="/videocompressor">Video Compressor</a>
+                    </div>
+                </div>
+                <div class="footer-col">
+                    <h4>Company</h4>
+                    <div class="footer-links">
+                        <a href="https://gcraft.tech/about">About Us</a>
+                        <a href="https://gcraft.tech/discuss-project">Contact</a>
+                    </div>
+                </div>
+                <div class="footer-col">
+                    <h4>Legal</h4>
+                    <div class="footer-links">
+                        <a href="#">Terms of Service</a>
+                        <a href="#">Privacy Policy</a>
+                        <a href="#">Cookie Policy</a>
+                        <a href="#">GDPR Compliance</a>
+                    </div>
+                </div>
+            </div>
+            <div class="copyright">
+                © 2025 GCraft. All rights reserved.
+            </div>
         </div>
-        <div class="footer-col">
-          <h4>Tools</h4>
-          <div class="footer-links">
-            <a href="/downloader?platform=youtube">YouTube Downloader</a>
-            <a href="/downloader?platform=instagram">Instagram Downloader</a>
-            <a href="/downloader?platform=tiktok">TikTok Downloader</a>
-            <a href="/pdfconvertertypes">PDF Converter</a>
-            <a href="/imageconvertertypes">Image Converter</a>
-            <a href="/voicetotext">Voice-to-Text</a>
-            <a href="/imagecompressor">Image Compressor</a>
-            <a href="/videocompressor">Video Compressor</a>
-          </div>
-        </div>
-        <div class="footer-col">
-          <h4>Company</h4>
-          <div class="footer-links">
-            <a href="https://gcraft.tech/about">About Us</a>
-            <a href="https://gcraft.tech/discuss-project">Contact</a>
-          </div>
-        </div>
-        <div class="footer-col">
-          <h4>Legal</h4>
-          <div class="footer-links">
-            <a href="#">Terms of Service</a>
-            <a href="#">Privacy Policy</a>
-            <a href="#">Cookie Policy</a>
-            <a href="#">GDPR Compliance</a>
-          </div>
-        </div>
-      </div>
-      <div class="copyright">
-        © 2025 GCraft. All rights reserved.
-      </div>
-    </div>
-  </footer>
-  </body>
+    </footer>
+</body>
 </html>
