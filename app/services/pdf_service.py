@@ -1,7 +1,7 @@
 import os
 import uuid
-from PIL import Image  # Replaced fitz for image operations
-import pdfplumber
+import fitz  # PyMuPDF
+import pdfplumber  # Add to imports
 from docx import Document
 from pptx import Presentation
 from openpyxl import Workbook
@@ -34,78 +34,101 @@ class PDFConverter:
         return temp_file.name
 
     async def images_to_pdf(self, files: list[UploadFile]) -> str:
-        """Convert multiple images to a single PDF using Pillow."""
-        if not files:
-            raise ValueError("No files provided for conversion.")
-
+        """Convert multiple images to a single PDF using PyMuPDF."""
         output_path = f"temp_{uuid.uuid4()}.pdf"
+        doc = fitz.open()  # Create empty PDF
         
-        pil_images = []
         for file in files:
+            # Read image directly from upload without temporary file
             image_bytes = await file.read()
-            img = Image.open(BytesIO(image_bytes))
             
-            # Convert to RGB to ensure compatibility for PDF saving.
-            if img.mode == 'RGBA' or img.mode == 'P':
-                img = img.convert('RGB')
-                
-            pil_images.append(img)
+            # Create PDF page from image bytes
+            img_doc = fitz.open(stream=image_bytes, filetype="jpg")  # Supports jpg/png/webp/etc
+            pdf_bytes = img_doc.convert_to_pdf()
+            img_doc.close()
+            
+            # Insert converted image as PDF page
+            img_pdf = fitz.open("pdf", pdf_bytes)
+            doc.insert_pdf(img_pdf)
+            img_pdf.close()
         
-        if not pil_images:
-             raise ValueError("No valid images could be processed.")
-
-        # Save the first image, and append the rest
-        pil_images[0].save(
-            output_path, 
-            "PDF", 
-            resolution=100.0, 
-            save_all=True, 
-            append_images=pil_images[1:]
-        )
-        
+        # Save final PDF
+        doc.save(output_path)
+        doc.close()
         return output_path
     
-    async def pdf_to_jpg(self, file: UploadFile, dpi: int = 300) -> str:
-        """Convert each page of a PDF to a JPG image using pdf2image."""
-        pdf_path = await self._save_upload_file(file, "pdf")
+    async def word_to_powerpoint(self, file: UploadFile):
+        """Convert Word document to PowerPoint presentation"""
+        docx_path = await self._save_upload_file(file, "docx")
+        output_path = f"temp_{uuid.uuid4()}.pptx"
         
         try:
-            # Convert PDF to a list of Pillow Image objects
-            # This requires the poppler-utils package to be installed on the system
-            images = convert_from_path(pdf_path, dpi=dpi, fmt='jpeg')
+            # Read the Word document
+            doc = Document(docx_path)
+            prs = Presentation()
+            blank_slide_layout = prs.slide_layouts[6]  # Blank slide layout
             
-            if not images:
-                raise RuntimeError("PDF to image conversion failed: no images were generated.")
-
-            zip_buffer = BytesIO()
-            with zipfile.ZipFile(zip_buffer, 'a', zipfile.ZIP_DEFLATED, False) as zip_file:
-                for i, image in enumerate(images):
-                    # Save image to a byte buffer
-                    img_byte_arr = BytesIO()
-                    image.save(img_byte_arr, format='JPEG')
-                    img_byte_arr.seek(0)
+            # Create a title slide first
+            title_slide_layout = prs.slide_layouts[0]
+            slide = prs.slides.add_slide(title_slide_layout)
+            title = slide.shapes.title
+            subtitle = slide.placeholders[1]
+            
+            # Use the first paragraph as title if exists
+            if len(doc.paragraphs) > 0:
+                title.text = doc.paragraphs[0].text
+                
+            # Add each paragraph as a new slide
+            for para in doc.paragraphs[1:]:
+                if para.text.strip():  # Skip empty paragraphs
+                    slide = prs.slides.add_slide(blank_slide_layout)
+                    left = Inches(1)
+                    top = Inches(1)
+                    width = prs.slide_width - Inches(2)
+                    height = prs.slide_height - Inches(2)
                     
-                    # Write image bytes to the zip file
-                    zip_file.writestr(f'page_{i+1}.jpg', img_byte_arr.getvalue())
+                    text_box = slide.shapes.add_textbox(left, top, width, height)
+                    text_frame = text_box.text_frame
+                    text_frame.word_wrap = True
+                    
+                    p = text_frame.add_paragraph()
+                    p.text = para.text
+                    p.font.size = Pt(24)  # Larger font for presentation
             
-            output_path = f"temp_{uuid.uuid4()}.zip"
-            with open(output_path, 'wb') as f:
-                f.write(zip_buffer.getvalue())
-            
+            prs.save(output_path)
             return output_path
-        
+            
         except Exception as e:
-            # Provide a more helpful error if Poppler is likely missing
-            if "pdftoppm" in str(e).lower() or "poppler" in str(e).lower():
-                raise RuntimeError(
-                    "pdf2image error: Poppler utility not found or failed. "
-                    "Please ensure Poppler is installed in your Vercel environment."
-                ) from e
-            raise e
+            if os.path.exists(output_path):
+                os.remove(output_path)
+            raise RuntimeError(f"Word to PowerPoint conversion failed: {str(e)}")
         finally:
-            # Clean up the temporary PDF file
-            os.unlink(pdf_path)
-
+            os.unlink(docx_path)
+    async def pdf_to_jpg(self, file: UploadFile, dpi: int = 300) -> str:
+        pdf_path = await self._save_upload_file(file, "pdf")
+        doc = fitz.open(pdf_path)  # Open PDF with PyMuPDF
+        
+        zip_buffer = BytesIO()
+        with zipfile.ZipFile(zip_buffer, 'a', zipfile.ZIP_DEFLATED, False) as zip_file:
+            for i, page in enumerate(doc):
+                # Render page as a pixmap (image)
+                pix = page.get_pixmap(dpi=dpi)
+                
+                # Convert to JPEG bytes
+                img_bytes = BytesIO()
+                img_bytes.write(pix.tobytes("jpeg"))
+                img_bytes.seek(0)
+                
+                zip_file.writestr(f'page_{i+1}.jpg', img_bytes.getvalue())
+        
+        doc.close()
+        os.unlink(pdf_path)
+        
+        output_path = f"temp_{uuid.uuid4()}.zip"
+        with open(output_path, 'wb') as f:
+            f.write(zip_buffer.getvalue())
+        
+        return output_path
     
     async def word_to_pdf(self, file: UploadFile):
         """Convert Word to PDF with comprehensive error handling"""
@@ -307,7 +330,6 @@ class PDFConverter:
             raise RuntimeError(f"Word to PowerPoint conversion failed: {str(e)}")
         finally:
             os.unlink(docx_path)
-            
     async def pdf_to_powerpoint(self, file: UploadFile) -> str:
         pdf_path = await self._save_upload_file(file, "pdf")
         output_path = f"temp_{uuid.uuid4()}.pptx"
@@ -507,6 +529,10 @@ class PDFConverter:
                 shutil.rmtree(temp_dir, ignore_errors=True)
             raise RuntimeError(f"PPTX to PDF conversion failed: {str(e)}") from e
         
+       
+
+
+
     async def pdf_to_excel(self ,file: UploadFile) -> str:
         pdf_path = await self._save_upload_file(file, "pdf")
         output_path = f"temp_{uuid.uuid4()}.xlsx"
