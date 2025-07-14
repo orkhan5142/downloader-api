@@ -4,9 +4,7 @@ from PIL import Image  # Replaced fitz for image operations
 import pdfplumber
 from docx import Document
 from pptx import Presentation
-from openpyxl import Workbook
 from pdf2docx import Converter as PdfToDocx
-from pdf2pptx import convert_pdf2pptx
 from pdf2image import convert_from_path
 import zipfile
 from io import BytesIO
