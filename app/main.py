@@ -73,13 +73,13 @@ async def get_imageconvertertypes_page(request: Request):
 from app.routers.downloader_r import router as download_router
 
 from app.routers.pdf_router import router as pdf_router
-from app.routers.voice_r import router as voice_router  # Add this import
+# from app.routers.voice_r import router as voice_router  # Add this import
 from app.routers.compressor_r import router as compressor_router  # Add this import
 from app.routers.image_router import router as image_router  # Add this import
 
 app.include_router(download_router)
 app.include_router(pdf_router)
-app.include_router(voice_router)
+# app.include_router(voice_router)
 app.include_router(compressor_router)  
 app.include_router(image_router)
 # ... etc.
